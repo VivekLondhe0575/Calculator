@@ -3,255 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vivek's Calculator</title>
+    <title>Calculator</title>
     <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background: linear-gradient(to right, #6a11cb, #2575fc);
-        }
-        .calculator {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            width: 300px;
-            text-align: center;
-        }
-        .btn {
-            background: linear-gradient(to right, #ff7e5f, #feb47b);
-            border: none;
-            color: white;
-            padding: 15px;
-            margin: 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
-        .btn:hover {
-            background: linear-gradient(to right, #feb47b, #ff7e5f);
-        }
-        #display {
-            width: 100%;
-            padding: 15px;
-            margin-bottom: 15px;
-            font-size: 24px;
-            text-align: right;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
-        footer {
-            margin-top: 20px;
-            font-size: 12px;
-        }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
+        .container { max-width: 600px; margin: auto; padding: 20px; }
+        input, button { width: 100%; padding: 10px; margin: 10px 0; }
+        button { background-color: #5cb85c; color: white; border: none; }
+        button:hover { background-color: #4cae4c; }
+        .display { font-size: 24px; padding: 10px; background-color: #fff; border: 1px solid #ccc; }
     </style>
 </head>
 <body>
-    <div class="calculator">
-        <h1>Calculator App</h1>
-        <input type="text" id="display" disabled value="0" />
-        <div>
-            <button class="btn">1</button>
-            <button class="btn">2</button>
-            <button class="btn">3</button>
-            <button class="btn">+</button>
-        </div>
-        <div>
-            <button class="btn">4</button>
-            <button class="btn">5</button>
-            <button class="btn">6</button>
-            <button class="btn">-</button>
-        </div>
-        <div>
-            <button class="btn">7</button>
-            <button class="btn">8</button>
-            <button class="btn">9</button>
-            <button class="btn">×</button>
-        </div>
-        <div>
-            <button class="btn">0</button>
-            <button class="btn">.</button>
-            <button class="btn">=</button>
-            <button class="btn">÷</button>
-        </div>
-        <div>
-            <button class="btn" style="width: calc(50% - 15px);">C</button>
-            <button class="btn" style="width: calc(50% - 15px);">DEL</button>
-        </div>
-        <footer>
-            © Created by Vivek Londhe | 2026
-        </footer>
+    <div class="container">
+        <h1>Calculator</h1>
+        <div class="display" id="display">0</div>
+        <input type="text" id="input" placeholder="Enter calculation">
+        <button onclick="calculate()">Calculate</button>
     </div>
     <script>
-        let display = document.getElementById('display');
-        let buttons = document.querySelectorAll('.btn');
-        let currentInput = '0';
-        let previousInput = '';
-        let operation = null;
-        let shouldResetDisplay = false;
-
-        buttons.forEach(button => {
-            button.addEventListener('click', function() {
-                handleButtonClick(this.textContent);
-            });
-        });
-
-        // Keyboard support
-        document.addEventListener('keydown', function(event) {
-            const key = event.key;
-            
-            // Number keys (0-9)
-            if (key >= '0' && key <= '9') {
-                handleButtonClick(key);
-            }
-            // Operators
-            else if (key === '+') {
-                handleButtonClick('+');
-            }
-            else if (key === '-') {
-                handleButtonClick('-');
-            }
-            else if (key === '*') {
-                handleButtonClick('×');
-            }
-            else if (key === '/') {
-                event.preventDefault();
-                handleButtonClick('÷');
-            }
-            // Decimal point
-            else if (key === '.') {
-                handleButtonClick('.');
-            }
-            // Equals (Enter)
-            else if (key === 'Enter') {
-                event.preventDefault();
-                handleButtonClick('=');
-            }
-            // Clear (Escape)
-            else if (key === 'Escape') {
-                handleButtonClick('C');
-            }
-            // Delete (Backspace)
-            else if (key === 'Backspace') {
-                event.preventDefault();
-                handleButtonClick('DEL');
-            }
-        });
-
-        function handleButtonClick(value) {
-            // Clear button
-            if (value === 'C') {
-                currentInput = '0';
-                previousInput = '';
-                operation = null;
-                shouldResetDisplay = false;
-                updateDisplay();
-                return;
-            }
-
-            // Delete button - removes last character
-            if (value === 'DEL') {
-                if (currentInput.length > 1) {
-                    currentInput = currentInput.slice(0, -1);
-                } else {
-                    currentInput = '0';
-                }
-                updateDisplay();
-                return;
-            }
-
-            // Number input
-            if (value >= '0' && value <= '9') {
-                if (shouldResetDisplay) {
-                    currentInput = value;
-                    shouldResetDisplay = false;
-                } else {
-                    currentInput = currentInput === '0' ? value : currentInput + value;
-                }
-                updateDisplay();
-                return;
-            }
-
-            // Decimal point
-            if (value === '.') {
-                if (!currentInput.includes('.')) {
-                    currentInput += '.';
-                    updateDisplay();
-                }
-                return;
-            }
-
-            // Operators
-            if (value === '+' || value === '-' || value === '×' || value === '÷') {
-                if (operation !== null && !shouldResetDisplay) {
-                    calculate();
-                }
-                previousInput = currentInput;
-                operation = value;
-                shouldResetDisplay = true;
-                return;
-            }
-
-            // Equals button
-            if (value === '=') {
-                calculate();
-            }
-        }
-
         function calculate() {
-            if (operation === null || shouldResetDisplay) {
-                return;
+            var input = document.getElementById('input').value;
+            try {
+                var result = eval(input);
+                document.getElementById('display').innerText = result;
+            } catch (error) {
+                document.getElementById('display').innerText = 'Error';
             }
-
-            let result;
-            const prev = parseFloat(previousInput);
-            const current = parseFloat(currentInput);
-
-            if (isNaN(prev) || isNaN(current)) {
-                return;
-            }
-
-            switch (operation) {
-                case '+':
-                    result = prev + current;
-                    break;
-                case '-':
-                    result = prev - current;
-                    break;
-                case '×':
-                    result = prev * current;
-                    break;
-                case '÷':
-                    if (current === 0) {
-                        alert('Cannot divide by zero!');
-                        currentInput = '0';
-                        operation = null;
-                        updateDisplay();
-                        return;
-                    }
-                    result = prev / current;
-                    break;
-                default:
-                    return;
-            }
-
-            currentInput = result.toString();
-            operation = null;
-            previousInput = '';
-            shouldResetDisplay = true;
-            updateDisplay();
         }
-
-        function updateDisplay() {
-            display.value = currentInput;
-        }
-
-        // Initialize display
-        updateDisplay();
     </script>
 </body>
 </html>
